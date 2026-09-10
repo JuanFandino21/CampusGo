@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusGo</title>
+</head>
+
+<body>
+
+    <h1>CampusGo</h1>
+
+    <h2>Objetos perdidos y encontrados</h2>
+
+    <p>
+        Plataforma universitaria para registrar y consultar
+        objetos perdidos y encontrados.
+    </p>
+
+    <hr>
+
+    <h3>Registrar objeto</h3>
+
+    <form id="formularioObjeto">
+
+        <label>Nombre:</label>
+        <input type="text" id="nombre" required>
+        <br><br>
+
+        <label>Descripción:</label>
+        <input type="text" id="descripcion" required>
+        <br><br>
+
+        <label>Categoría:</label>
+        <input type="text" id="categoria" required>
+        <br><br>
+
+        <label>Ubicación:</label>
+        <input type="text" id="ubicacion" required>
+        <br><br>
+
+        <label>Estado:</label>
+
+        <select id="estado" required>
+            <option value="PERDIDO">PERDIDO</option>
+            <option value="ENCONTRADO">ENCONTRADO</option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">Registrar objeto</button>
+
+    </form>
+
+    <hr>
+
+    <h3>Objetos registrados</h3>
+
+    <button onclick="listarObjetos()">
+        Actualizar lista
+    </button>
+
+    <ul id="listaObjetos"></ul>
+
+    <script>
+
+        const formulario = document.getElementById("formularioObjeto");
+
+        formulario.addEventListener("submit", function(evento) {
+
+            evento.preventDefault();
+
+            const objeto = {
+                nombre: document.getElementById("nombre").value,
+                descripcion: document.getElementById("descripcion").value,
+                categoria: document.getElementById("categoria").value,
+                ubicacion: document.getElementById("ubicacion").value,
+                estado: document.getElementById("estado").value
+            };
+
+            fetch("/api/objetos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(objeto)
+            })
+            .then(function(respuesta) {
+
+                if (!respuesta.ok) {
+                    throw new Error("No se pudo registrar el objeto.");
+                }
+
+                return respuesta.json();
+            })
+            .then(function(objetoRegistrado) {
+
+                alert("Objeto registrado correctamente.");
+
+                formulario.reset();
+
+                listarObjetos();
+            })
+            .catch(function(error) {
+
+                alert(error.message);
+            });
+        });
+
+        function listarObjetos() {
+
+            fetch("/api/objetos")
+            .then(function(respuesta) {
+                return respuesta.json();
+            })
+            .then(function(objetos) {
+
+                const lista = document.getElementById("listaObjetos");
+
+                lista.innerHTML = "";
+
+                objetos.forEach(function(objeto) {
+
+                    const elemento = document.createElement("li");
+
+                    elemento.textContent =
+                        objeto.nombre
+                        + " - "
+                        + objeto.estado
+                        + " - "
+                        + objeto.ubicacion;
+
+                    lista.appendChild(elemento);
+                });
+            })
+            .catch(function(error) {
+
+                alert("No se pudieron cargar los objetos.");
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>
