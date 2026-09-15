@@ -76,6 +76,7 @@ src/
 | GET | `/api/objetos` | Listar objetos |
 | GET | `/api/objetos/{id}` | Consultar un objeto por ID |
 | GET | `/api/objetos/estado?valor=PERDIDO` | Consultar objetos por estado |
+| GET | `/api/objetos/buscar?nombre=calculadora` | Buscar objetos por nombre |
 | PUT | `/api/objetos/{id}` | Actualizar un objeto |
 | DELETE | `/api/objetos/{id}` | Eliminar un objeto |
 

@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 public class Objeto {
@@ -26,6 +27,7 @@ public class Objeto {
     private String ubicacion;
 
     @NotBlank
+    @Pattern(regexp = "PERDIDO|ENCONTRADO")
     private String estado;
 
     public Objeto() {
