@@ -5,6 +5,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CampusGo</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: "Lexend", sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background: #eef2f6;
+            color: #1f3a5f;
+        }
+
+        hr { border: none; border-top: 2px dashed #b8c4d2; margin: 30px 0; }
+
+        label { display: block; font-weight: 600; margin-bottom: 4px; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #b8c4d2;
+            border-radius: 8px;
+            background: white;
+            font: inherit;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #1f3a5f;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        button:hover { background: #2d5282; }
+
+        ul { list-style: none; padding: 0; }
+
+        li {
+            background: white;
+            padding: 12px 16px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border-left: 6px solid gray;
+        }
+
+        .buscador { display: flex; gap: 8px; }
+        .buscador input { flex: 1; }
+
+        .PERDIDO { border-left-color: #d64545; }
+        .ENCONTRADO { border-left-color: #2e8b57; }
+    </style>
 </head>
 
 <body>
@@ -57,9 +112,13 @@
 
     <h3>Objetos registrados</h3>
 
-    <button onclick="listarObjetos()">
-        Actualizar lista
-    </button>
+    <label for="busqueda">Buscar por nombre:</label>
+
+    <div class="buscador">
+        <input type="text" id="busqueda" placeholder="Ej: calculadora">
+        <button onclick="buscarObjetos()">Buscar</button>
+        <button onclick="listarObjetos()">Ver todos</button>
+    </div>
 
     <ul id="listaObjetos"></ul>
 
@@ -108,9 +167,16 @@
             });
         });
 
-        function listarObjetos() {
+        function buscarObjetos() {
 
-            fetch("/api/objetos")
+            const texto = document.getElementById("busqueda").value;
+
+            listarObjetos("/api/objetos/buscar?nombre=" + encodeURIComponent(texto));
+        }
+
+        function listarObjetos(url = "/api/objetos") {
+
+            fetch(url)
             .then(function(respuesta) {
                 return respuesta.json();
             })
@@ -120,9 +186,15 @@
 
                 lista.innerHTML = "";
 
+                if (objetos.length === 0) {
+                    lista.innerHTML = "<li>No se encontraron objetos.</li>";
+                }
+
                 objetos.forEach(function(objeto) {
 
                     const elemento = document.createElement("li");
+
+                    elemento.className = objeto.estado;
 
                     elemento.textContent =
                         objeto.nombre
@@ -139,6 +211,8 @@
                 alert("No se pudieron cargar los objetos.");
             });
         }
+
+        listarObjetos();
 
     </script>
 

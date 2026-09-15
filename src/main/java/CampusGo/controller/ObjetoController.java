@@ -1,10 +1,8 @@
 package CampusGo.controller;
 
-import CampusGo.model.Objeto;
-import CampusGo.service.ObjetoService;
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import CampusGo.model.Objeto;
+import CampusGo.service.ObjetoService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/objetos")
@@ -49,6 +51,13 @@ public class ObjetoController {
             @RequestParam String valor) {
 
         return ResponseEntity.ok(objetoService.listarPorEstado(valor));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Objeto>> buscarPorNombre(
+            @RequestParam String nombre) {
+
+        return ResponseEntity.ok(objetoService.buscarPorNombre(nombre));
     }
 
     @PostMapping

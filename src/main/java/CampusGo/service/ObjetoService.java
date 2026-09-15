@@ -1,10 +1,12 @@
 package CampusGo.service;
 
-import CampusGo.model.Objeto;
-import CampusGo.repository.ObjetoRepository;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.stereotype.Service;
+
+import CampusGo.model.Objeto;
+import CampusGo.repository.ObjetoRepository;
 
 @Service
 public class ObjetoService {
@@ -59,5 +61,9 @@ public class ObjetoService {
 
     public List<Objeto> listarPorEstado(String estado) {
         return objetoRepository.findByEstadoIgnoreCase(estado);
+    }
+
+    public List<Objeto> buscarPorNombre(String nombre) {
+        return objetoRepository.findByNombreContainingIgnoreCase(nombre);
     }
 }
