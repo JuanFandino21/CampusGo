@@ -1,0 +1,51 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: campusgo-db
+
+    environment:
+      POSTGRES_DB: campusgo
+      POSTGRES_USER: campusgo
+      POSTGRES_PASSWORD: campusgo123
+
+    volumes:
+      - campusgo-postgres-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campusgo -d campusgo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: campusgo:1.0
+    container_name: campusgo-app
+
+    ports:
+      - "8082:8081"
+
+    environment:
+      SERVER_PORT: 8081
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campusgo
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_USERNAME: campusgo
+      SPRING_DATASOURCE_PASSWORD: campusgo123
+
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+
+      SPRING_H2_CONSOLE_ENABLED: "false"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  campusgo-postgres-data:
