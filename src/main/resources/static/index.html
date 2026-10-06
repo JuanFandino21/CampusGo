@@ -4,11 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>CampusGo</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
+
         body {
             font-family: "Lexend", sans-serif;
             max-width: 600px;
@@ -18,11 +20,20 @@
             color: #1f3a5f;
         }
 
-        hr { border: none; border-top: 2px dashed #b8c4d2; margin: 30px 0; }
+        hr {
+            border: none;
+            border-top: 2px dashed #b8c4d2;
+            margin: 30px 0;
+        }
 
-        label { display: block; font-weight: 600; margin-bottom: 4px; }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 10px;
             border: 1px solid #b8c4d2;
@@ -42,9 +53,14 @@
             cursor: pointer;
         }
 
-        button:hover { background: #2d5282; }
+        button:hover {
+            background: #2d5282;
+        }
 
-        ul { list-style: none; padding: 0; }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
 
         li {
             background: white;
@@ -54,11 +70,56 @@
             border-left: 6px solid gray;
         }
 
-        .buscador { display: flex; gap: 8px; }
-        .buscador input { flex: 1; }
+        .buscador {
+            display: flex;
+            gap: 8px;
+        }
 
-        .PERDIDO { border-left-color: #d64545; }
-        .ENCONTRADO { border-left-color: #2e8b57; }
+        .buscador input {
+            flex: 1;
+        }
+
+        .PERDIDO {
+            border-left-color: #d64545;
+        }
+
+        .ENCONTRADO {
+            border-left-color: #2e8b57;
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        .login {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #d5dde6;
+        }
+
+        .sesion {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .mensaje {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .botones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
     </style>
 </head>
 
@@ -75,144 +136,684 @@
 
     <hr>
 
-    <h3>Registrar objeto</h3>
+    <!-- ========================================== -->
+    <!-- INICIO DE SESIÓN                          -->
+    <!-- ========================================== -->
 
-    <form id="formularioObjeto">
+    <section id="seccionLogin">
 
-        <label>Nombre:</label>
-        <input type="text" id="nombre" required>
-        <br><br>
+        <h3>Iniciar sesión</h3>
 
-        <label>Descripción:</label>
-        <input type="text" id="descripcion" required>
-        <br><br>
+        <div class="login">
 
-        <label>Categoría:</label>
-        <input type="text" id="categoria" required>
-        <br><br>
+            <form id="formularioLogin">
 
-        <label>Ubicación:</label>
-        <input type="text" id="ubicacion" required>
-        <br><br>
+                <label for="usuarioLogin">Usuario:</label>
 
-        <label>Estado:</label>
+                <input
+                    type="text"
+                    id="usuarioLogin"
+                    required
+                >
 
-        <select id="estado" required>
-            <option value="PERDIDO">PERDIDO</option>
-            <option value="ENCONTRADO">ENCONTRADO</option>
-        </select>
+                <br><br>
 
-        <br><br>
+                <label for="passwordLogin">Contraseña:</label>
 
-        <button type="submit">Registrar objeto</button>
+                <input
+                    type="password"
+                    id="passwordLogin"
+                    required
+                >
 
-    </form>
+                <br><br>
 
-    <hr>
+                <button type="submit">
+                    Iniciar sesión
+                </button>
 
-    <h3>Objetos registrados</h3>
+            </form>
 
-    <label for="busqueda">Buscar por nombre:</label>
+            <div id="mensajeLogin" class="mensaje"></div>
 
-    <div class="buscador">
-        <input type="text" id="busqueda" placeholder="Ej: calculadora">
-        <button onclick="buscarObjetos()">Buscar</button>
-        <button onclick="listarObjetos()">Ver todos</button>
-    </div>
+        </div>
 
-    <ul id="listaObjetos"></ul>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- CONTENIDO PROTEGIDO                       -->
+    <!-- ========================================== -->
+
+    <section id="contenidoAplicacion" class="oculto">
+
+        <div class="sesion">
+
+            <span>
+                Sesión iniciada como:
+                <strong id="usuarioActual"></strong>
+            </span>
+
+            <button
+                type="button"
+                onclick="cerrarSesion()"
+            >
+                Cerrar sesión
+            </button>
+
+        </div>
+
+
+        <hr>
+
+
+        <!-- ========================================== -->
+        <!-- REGISTRAR OBJETO                           -->
+        <!-- ========================================== -->
+
+        <h3>Registrar objeto</h3>
+
+        <form id="formularioObjeto">
+
+            <label for="nombre">Nombre:</label>
+
+            <input
+                type="text"
+                id="nombre"
+                required
+            >
+
+            <br><br>
+
+
+            <label for="descripcion">Descripción:</label>
+
+            <input
+                type="text"
+                id="descripcion"
+                required
+            >
+
+            <br><br>
+
+
+            <label for="categoria">Categoría:</label>
+
+            <input
+                type="text"
+                id="categoria"
+                required
+            >
+
+            <br><br>
+
+
+            <label for="ubicacion">Ubicación:</label>
+
+            <input
+                type="text"
+                id="ubicacion"
+                required
+            >
+
+            <br><br>
+
+
+            <label for="estado">Estado:</label>
+
+            <select
+                id="estado"
+                required
+            >
+                <option value="PERDIDO">PERDIDO</option>
+                <option value="ENCONTRADO">ENCONTRADO</option>
+            </select>
+
+            <br><br>
+
+
+            <button type="submit">
+                Registrar objeto
+            </button>
+
+        </form>
+
+
+        <hr>
+
+
+        <!-- ========================================== -->
+        <!-- OBJETOS REGISTRADOS                        -->
+        <!-- ========================================== -->
+
+        <h3>Objetos registrados</h3>
+
+        <label for="busqueda">
+            Buscar por nombre:
+        </label>
+
+        <div class="buscador">
+
+            <input
+                type="text"
+                id="busqueda"
+                placeholder="Ej: calculadora"
+            >
+
+            <button
+                type="button"
+                onclick="buscarObjetos()"
+            >
+                Buscar
+            </button>
+
+            <button
+                type="button"
+                onclick="listarObjetos()"
+            >
+                Ver todos
+            </button>
+
+        </div>
+
+
+        <ul id="listaObjetos"></ul>
+
+    </section>
+
 
     <script>
 
-        const formulario = document.getElementById("formularioObjeto");
+        // ==========================================
+        // TOKEN JWT
+        // ==========================================
 
-        formulario.addEventListener("submit", function(evento) {
+        const CLAVE_TOKEN = "campusgo_token";
 
-            evento.preventDefault();
+        const CLAVE_USUARIO = "campusgo_usuario";
 
-            const objeto = {
-                nombre: document.getElementById("nombre").value,
-                descripcion: document.getElementById("descripcion").value,
-                categoria: document.getElementById("categoria").value,
-                ubicacion: document.getElementById("ubicacion").value,
-                estado: document.getElementById("estado").value
-            };
 
-            fetch("/api/objetos", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(objeto)
-            })
-            .then(function(respuesta) {
+        // ==========================================
+        // ELEMENTOS DEL HTML
+        // ==========================================
 
-                if (!respuesta.ok) {
-                    throw new Error("No se pudo registrar el objeto.");
+        const formularioLogin =
+                document.getElementById("formularioLogin");
+
+        const formularioObjeto =
+                document.getElementById("formularioObjeto");
+
+        const seccionLogin =
+                document.getElementById("seccionLogin");
+
+        const contenidoAplicacion =
+                document.getElementById("contenidoAplicacion");
+
+        const usuarioActual =
+                document.getElementById("usuarioActual");
+
+        const mensajeLogin =
+                document.getElementById("mensajeLogin");
+
+
+        // ==========================================
+        // OBTENER TOKEN
+        // ==========================================
+
+        function obtenerToken() {
+
+            return sessionStorage.getItem(CLAVE_TOKEN);
+        }
+
+
+        // ==========================================
+        // OBTENER USUARIO
+        // ==========================================
+
+        function obtenerUsuario() {
+
+            return sessionStorage.getItem(CLAVE_USUARIO);
+        }
+
+
+        // ==========================================
+        // INICIAR SESIÓN
+        // ==========================================
+
+        formularioLogin.addEventListener(
+            "submit",
+            function(evento) {
+
+                evento.preventDefault();
+
+
+                const username =
+                        document.getElementById("usuarioLogin").value;
+
+                const password =
+                        document.getElementById("passwordLogin").value;
+
+
+                mensajeLogin.textContent =
+                        "Validando credenciales...";
+
+
+                fetch("/api/auth/login", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+
+                })
+
+                .then(function(respuesta) {
+
+                    if (respuesta.status === 401) {
+
+                        throw new Error(
+                            "Usuario o contraseña incorrectos."
+                        );
+                    }
+
+
+                    if (!respuesta.ok) {
+
+                        throw new Error(
+                            "No fue posible iniciar sesión."
+                        );
+                    }
+
+
+                    return respuesta.json();
+
+                })
+
+                .then(function(datosLogin) {
+
+                    sessionStorage.setItem(
+                        CLAVE_TOKEN,
+                        datosLogin.token
+                    );
+
+
+                    sessionStorage.setItem(
+                        CLAVE_USUARIO,
+                        datosLogin.username
+                    );
+
+
+                    mensajeLogin.textContent = "";
+
+
+                    formularioLogin.reset();
+
+
+                    mostrarAplicacion();
+
+
+                    listarObjetos();
+
+                })
+
+                .catch(function(error) {
+
+                    mensajeLogin.textContent =
+                            error.message;
+
+                });
+
+            }
+        );
+
+
+        // ==========================================
+        // MOSTRAR APLICACIÓN
+        // ==========================================
+
+        function mostrarAplicacion() {
+
+            const usuario =
+                    obtenerUsuario();
+
+
+            usuarioActual.textContent =
+                    usuario || "";
+
+
+            seccionLogin.classList.add("oculto");
+
+            contenidoAplicacion.classList.remove("oculto");
+
+        }
+
+
+        // ==========================================
+        // CERRAR SESIÓN
+        // ==========================================
+
+        function cerrarSesion() {
+
+            sessionStorage.removeItem(CLAVE_TOKEN);
+
+            sessionStorage.removeItem(CLAVE_USUARIO);
+
+
+            contenidoAplicacion.classList.add("oculto");
+
+            seccionLogin.classList.remove("oculto");
+
+
+            usuarioActual.textContent = "";
+
+            document.getElementById(
+                "listaObjetos"
+            ).innerHTML = "";
+
+
+            mensajeLogin.textContent =
+                    "Sesión cerrada correctamente.";
+
+        }
+
+
+        // ==========================================
+        // REGISTRAR OBJETO
+        // ==========================================
+
+        formularioObjeto.addEventListener(
+            "submit",
+            function(evento) {
+
+                evento.preventDefault();
+
+
+                const token =
+                        obtenerToken();
+
+
+                if (!token) {
+
+                    alert(
+                        "Debe iniciar sesión antes de registrar un objeto."
+                    );
+
+                    return;
                 }
 
-                return respuesta.json();
-            })
-            .then(function(objetoRegistrado) {
 
-                alert("Objeto registrado correctamente.");
+                const objeto = {
 
-                formulario.reset();
+                    nombre:
+                        document.getElementById(
+                            "nombre"
+                        ).value,
 
-                listarObjetos();
-            })
-            .catch(function(error) {
+                    descripcion:
+                        document.getElementById(
+                            "descripcion"
+                        ).value,
 
-                alert(error.message);
-            });
-        });
+                    categoria:
+                        document.getElementById(
+                            "categoria"
+                        ).value,
+
+                    ubicacion:
+                        document.getElementById(
+                            "ubicacion"
+                        ).value,
+
+                    estado:
+                        document.getElementById(
+                            "estado"
+                        ).value
+
+                };
+
+
+                fetch("/api/objetos", {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                                "application/json",
+
+                        "Authorization":
+                                "Bearer " + token
+                    },
+
+                    body:
+                        JSON.stringify(objeto)
+
+                })
+
+                .then(function(respuesta) {
+
+                    if (respuesta.status === 401) {
+
+                        cerrarSesion();
+
+                        throw new Error(
+                            "La sesión expiró. Inicie sesión nuevamente."
+                        );
+                    }
+
+
+                    if (!respuesta.ok) {
+
+                        throw new Error(
+                            "No se pudo registrar el objeto."
+                        );
+                    }
+
+
+                    return respuesta.json();
+
+                })
+
+                .then(function(objetoRegistrado) {
+
+                    alert(
+                        "Objeto registrado correctamente."
+                    );
+
+
+                    formularioObjeto.reset();
+
+
+                    listarObjetos();
+
+                })
+
+                .catch(function(error) {
+
+                    alert(error.message);
+
+                });
+
+            }
+        );
+
+
+        // ==========================================
+        // BUSCAR OBJETOS POR NOMBRE
+        // ==========================================
 
         function buscarObjetos() {
 
-            const texto = document.getElementById("busqueda").value;
+            const token =
+                    obtenerToken();
 
-            listarObjetos("/api/objetos/buscar?nombre=" + encodeURIComponent(texto));
+
+            if (!token) {
+
+                alert(
+                    "Debe iniciar sesión para consultar objetos."
+                );
+
+                return;
+            }
+
+
+            const texto =
+                    document.getElementById(
+                        "busqueda"
+                    ).value;
+
+
+            const url =
+                    "/api/objetos/buscar?nombre="
+                    + encodeURIComponent(texto);
+
+
+            listarObjetos(url);
+
         }
 
-        function listarObjetos(url = "/api/objetos") {
 
-            fetch(url)
-            .then(function(respuesta) {
-                return respuesta.json();
+        // ==========================================
+        // LISTAR OBJETOS
+        // ==========================================
+
+        function listarObjetos(
+                url = "/api/objetos"
+        ) {
+
+            const token =
+                    obtenerToken();
+
+
+            if (!token) {
+
+                return;
+            }
+
+
+            fetch(url, {
+
+                method: "GET",
+
+                headers: {
+
+                    "Authorization":
+                            "Bearer " + token
+
+                }
+
             })
+
+            .then(function(respuesta) {
+
+                if (respuesta.status === 401) {
+
+                    cerrarSesion();
+
+                    throw new Error(
+                        "La sesión expiró. Inicie sesión nuevamente."
+                    );
+                }
+
+
+                if (!respuesta.ok) {
+
+                    throw new Error(
+                        "No se pudieron cargar los objetos."
+                    );
+                }
+
+
+                return respuesta.json();
+
+            })
+
             .then(function(objetos) {
 
-                const lista = document.getElementById("listaObjetos");
+                const lista =
+                        document.getElementById(
+                            "listaObjetos"
+                        );
+
 
                 lista.innerHTML = "";
 
+
                 if (objetos.length === 0) {
-                    lista.innerHTML = "<li>No se encontraron objetos.</li>";
+
+                    lista.innerHTML =
+                            "<li>No se encontraron objetos.</li>";
+
+                    return;
                 }
 
-                objetos.forEach(function(objeto) {
 
-                    const elemento = document.createElement("li");
+                objetos.forEach(
+                    function(objeto) {
 
-                    elemento.className = objeto.estado;
+                        const elemento =
+                                document.createElement(
+                                    "li"
+                                );
 
-                    elemento.textContent =
-                        objeto.nombre
-                        + " - "
-                        + objeto.estado
-                        + " - "
-                        + objeto.ubicacion;
 
-                    lista.appendChild(elemento);
-                });
+                        elemento.className =
+                                objeto.estado;
+
+
+                        elemento.textContent =
+
+                                objeto.nombre
+
+                                + " - "
+
+                                + objeto.estado
+
+                                + " - "
+
+                                + objeto.ubicacion;
+
+
+                        lista.appendChild(
+                            elemento
+                        );
+
+                    }
+                );
+
             })
+
             .catch(function(error) {
 
-                alert("No se pudieron cargar los objetos.");
+                alert(error.message);
+
             });
+
         }
 
-        listarObjetos();
+
+        // ==========================================
+        // COMPROBAR SESIÓN AL CARGAR LA PÁGINA
+        // ==========================================
+
+        const tokenInicial =
+                obtenerToken();
+
+
+        if (tokenInicial) {
+
+            mostrarAplicacion();
+
+            listarObjetos();
+
+        }
 
     </script>
 
