@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: campusgo
       POSTGRES_USER: campusgo
-      POSTGRES_PASSWORD: campusgo123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
     volumes:
       - campusgo-postgres-data:/var/lib/postgresql/data
@@ -36,12 +36,15 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campusgo
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_DATASOURCE_USERNAME: campusgo
-      SPRING_DATASOURCE_PASSWORD: campusgo123
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
 
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
 
       SPRING_H2_CONSOLE_ENABLED: "false"
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES}
 
     depends_on:
       db:
