@@ -1,14 +1,17 @@
 package CampusGo.config;
 
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -22,7 +25,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
@@ -32,13 +34,19 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+
 import CampusGo.service.UsuarioService;
 
 /*
  * Configuración del microservicio de AUTENTICACIÓN.
  *
- * Este servicio EMITE tokens. Por eso tiene JwtEncoder,
- * pero no necesita JwtDecoder: él no valida tokens ajenos.
+ * Este servicio EMITE tokens, y los firma con la LLAVE PRIVADA
+ * del par RSA. Es el único que tiene esa llave.
  */
 @Configuration
 @EnableWebSecurity
@@ -126,34 +134,87 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+    // ==========================================
+    // LLAVES RSA
+    // ==========================================
+
     /*
-     * Convierte la clave secreta de configuración
-     * en una SecretKey utilizada por HS256.
+     * Llave privada. Con ella se FIRMAN los tokens.
+     * Solo existe en este microservicio.
      */
     @Bean
-    public SecretKey jwtSecretKey(
-            @Value("${app.jwt.secret}") String secret) {
+    public RSAPrivateKey llavePrivada() throws Exception {
 
-        byte[] keyBytes =
-                secret.getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = leerPem("keys/private.pem",
+                "PRIVATE KEY");
 
-        if (keyBytes.length < 32) {
-            throw new IllegalArgumentException(
-                    "La clave JWT debe tener al menos 32 bytes.");
-        }
+        PKCS8EncodedKeySpec especificacion =
+                new PKCS8EncodedKeySpec(bytes);
 
-        return new SecretKeySpec(keyBytes, "HmacSHA256");
+        return (RSAPrivateKey) KeyFactory
+                .getInstance("RSA")
+                .generatePrivate(especificacion);
     }
 
     /*
-     * Generador de JWT.
+     * Llave pública. Es la pareja de la privada y sirve
+     * únicamente para verificar las firmas.
      */
     @Bean
-    public JwtEncoder jwtEncoder(SecretKey jwtSecretKey) {
+    public RSAPublicKey llavePublica() throws Exception {
 
-        return NimbusJwtEncoder
-                .withSecretKey(jwtSecretKey)
-                .algorithm(MacAlgorithm.HS256)
+        byte[] bytes = leerPem("keys/public.pem",
+                "PUBLIC KEY");
+
+        X509EncodedKeySpec especificacion =
+                new X509EncodedKeySpec(bytes);
+
+        return (RSAPublicKey) KeyFactory
+                .getInstance("RSA")
+                .generatePublic(especificacion);
+    }
+
+    /*
+     * Lee un archivo .pem del classpath, le quita las líneas
+     * de encabezado y los saltos de línea, y decodifica
+     * el contenido que queda, que está en Base64.
+     */
+    private byte[] leerPem(String ruta, String etiqueta)
+            throws Exception {
+
+        String contenido = new String(
+                new ClassPathResource(ruta)
+                        .getInputStream()
+                        .readAllBytes(),
+                StandardCharsets.UTF_8);
+
+        String base64 = contenido
+                .replace("-----BEGIN " + etiqueta + "-----", "")
+                .replace("-----END " + etiqueta + "-----", "")
+                .replaceAll("\\s", "");
+
+        return Base64.getDecoder().decode(base64);
+    }
+
+    /*
+     * Generador de JWT firmados con RS256.
+     *
+     * El par de llaves se envuelve en un JWK (JSON Web Key),
+     * que es el formato estándar que usa Nimbus.
+     */
+    @Bean
+    public JwtEncoder jwtEncoder(
+            RSAPublicKey llavePublica,
+            RSAPrivateKey llavePrivada) {
+
+        RSAKey jwk = new RSAKey.Builder(llavePublica)
+                .privateKey(llavePrivada)
                 .build();
+
+        JWKSource<SecurityContext> fuente =
+                new ImmutableJWKSet<>(new JWKSet(jwk));
+
+        return new NimbusJwtEncoder(fuente);
     }
 }

@@ -36,12 +36,6 @@ spec:
                   name: campusgo-secret
                   key: POSTGRES_PASSWORD
 
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: campusgo-secret
-                  key: JWT_SECRET
-
           readinessProbe:
             tcpSocket:
               port: 8081

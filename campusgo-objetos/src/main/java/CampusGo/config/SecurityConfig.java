@@ -1,20 +1,21 @@
 package CampusGo.config;
 
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
@@ -24,11 +25,12 @@ import org.springframework.security.web.SecurityFilterChain;
  * Configuración del microservicio de OBJETOS.
  *
  * Este servicio NO emite tokens y NO conoce usuarios ni contraseñas.
- * Solo VALIDA los tokens que emitió el microservicio de autenticación,
- * comprobando la firma con la misma clave secreta.
+ * Solo VERIFICA los tokens que emitió el microservicio de autenticación,
+ * usando la LLAVE PÚBLICA del par RSA.
  *
- * Por eso aquí hay JwtDecoder pero no JwtEncoder, y no existen
- * ni BCrypt ni AuthenticationManager: este servicio no autentica a nadie.
+ * La llave privada no existe aquí, así que este servicio es incapaz
+ * de firmar un token aunque fuera vulnerado. Esa es la ventaja
+ * del cifrado asimétrico frente a una clave secreta compartida.
  */
 @Configuration
 @EnableWebSecurity
@@ -68,35 +70,50 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+    // ==========================================
+    // LLAVE RSA PÚBLICA
+    // ==========================================
+
     /*
-     * La misma clave secreta que usa el servicio de autenticación.
-     * Se comparte por variable de entorno, nunca en el código.
+     * Única llave que necesita este servicio.
+     * Es la pareja pública de la privada que firma en auth.
      */
     @Bean
-    public SecretKey jwtSecretKey(
-            @Value("${app.jwt.secret}") String secret) {
+    public RSAPublicKey llavePublica() throws Exception {
 
-        byte[] keyBytes =
-                secret.getBytes(StandardCharsets.UTF_8);
+        String contenido = new String(
+                new ClassPathResource("keys/public.pem")
+                        .getInputStream()
+                        .readAllBytes(),
+                StandardCharsets.UTF_8);
 
-        if (keyBytes.length < 32) {
-            throw new IllegalArgumentException(
-                    "La clave JWT debe tener al menos 32 bytes.");
-        }
+        String base64 = contenido
+                .replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
+                .replaceAll("\\s", "");
 
-        return new SecretKeySpec(keyBytes, "HmacSHA256");
+        byte[] bytes = Base64.getDecoder().decode(base64);
+
+        X509EncodedKeySpec especificacion =
+                new X509EncodedKeySpec(bytes);
+
+        return (RSAPublicKey) KeyFactory
+                .getInstance("RSA")
+                .generatePublic(especificacion);
     }
 
     /*
-     * Validador de JWT. Comprueba la firma y la expiración
-     * sin necesidad de llamar al servicio de autenticación.
+     * Validador de JWT. Comprueba la firma con la llave pública
+     * y revisa la expiración, sin llamar al servicio de
+     * autenticación en ningún momento.
      */
     @Bean
-    public JwtDecoder jwtDecoder(SecretKey jwtSecretKey) {
+    public JwtDecoder jwtDecoder(RSAPublicKey llavePublica) {
 
         return NimbusJwtDecoder
-                .withSecretKey(jwtSecretKey)
-                .macAlgorithm(MacAlgorithm.HS256)
+                .withPublicKey(llavePublica)
+                .signatureAlgorithm(SignatureAlgorithm.RS256)
                 .build();
     }
 }

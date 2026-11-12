@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -46,7 +46,7 @@ public class JwtService {
                 .claim("roles", roles)
                 .build();
 
-        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256)
+        JwsHeader header = JwsHeader.with(SignatureAlgorithm.RS256)
                 .build();
 
         return jwtEncoder
