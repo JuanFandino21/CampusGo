@@ -1,0 +1,127 @@
+package CampusGo.model;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
+@Entity
+public class Objeto {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank
+    private String nombre;
+
+    @NotBlank
+    private String descripcion;
+
+    @NotBlank
+    private String categoria;
+
+    @NotBlank
+    private String ubicacion;
+
+    @NotBlank
+    @Pattern(regexp = "PERDIDO|ENCONTRADO|ENTREGADO")
+    private String estado;
+
+    /*
+     * Fecha en que se registró el objeto.
+     * Hibernate la llena automáticamente al guardar.
+     */
+    @CreationTimestamp
+    private LocalDateTime fechaRegistro;
+
+    /*
+     * Datos de la entrega. Quedan vacíos hasta que
+     * el objeto se le devuelve a su dueño.
+     */
+    private LocalDateTime fechaEntrega;
+
+    private String entregadoA;
+
+    public Objeto() {
+    }
+
+    public Objeto(String nombre, String descripcion, String categoria,
+                   String ubicacion, String estado) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.categoria = categoria;
+        this.ubicacion = ubicacion;
+        this.estado = estado;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public LocalDateTime getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public void setFechaEntrega(LocalDateTime fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
+
+    public String getEntregadoA() {
+        return entregadoA;
+    }
+
+    public void setEntregadoA(String entregadoA) {
+        this.entregadoA = entregadoA;
+    }
+}

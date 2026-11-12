@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: campusgo-auth
+  namespace: campusgo
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: campusgo-auth
+
+  template:
+    metadata:
+      labels:
+        app: campusgo-auth
+
+    spec:
+      containers:
+        - name: campusgo-auth
+
+          image: campusgo-auth:1.0
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 8081
+
+          envFrom:
+            - configMapRef:
+                name: campusgo-auth-config
+
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: campusgo-secret
+                  key: POSTGRES_PASSWORD
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: campusgo-secret
+                  key: JWT_SECRET
+
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5

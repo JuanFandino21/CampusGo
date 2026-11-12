@@ -1,54 +1,119 @@
 services:
 
-  db:
+  # ==========================================
+  # Base de datos del microservicio de AUTH
+  # ==========================================
+  db-auth:
     image: postgres:16-alpine
-    container_name: campusgo-db
+    container_name: campusgo-db-auth
 
     environment:
-      POSTGRES_DB: campusgo
+      POSTGRES_DB: campusgo_auth
       POSTGRES_USER: campusgo
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
     volumes:
-      - campusgo-postgres-data:/var/lib/postgresql/data
+      - campusgo-auth-data:/var/lib/postgresql/data
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U campusgo -d campusgo"]
+      test: ["CMD-SHELL", "pg_isready -U campusgo -d campusgo_auth"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
-  app:
+
+  # ==========================================
+  # Base de datos del microservicio de OBJETOS
+  # ==========================================
+  db-objetos:
+    image: postgres:16-alpine
+    container_name: campusgo-db-objetos
+
+    environment:
+      POSTGRES_DB: campusgo_objetos
+      POSTGRES_USER: campusgo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    volumes:
+      - campusgo-objetos-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campusgo -d campusgo_objetos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # ==========================================
+  # Microservicio de AUTENTICACIÓN
+  # ==========================================
+  auth:
     build:
-      context: .
+      context: ./campusgo-auth
       dockerfile: Dockerfile
 
-    image: campusgo:1.0
-    container_name: campusgo-app
+    image: campusgo-auth:1.0
+    container_name: campusgo-auth
 
     ports:
-      - "8082:8081"
+      - "8081:8081"
 
     environment:
       SERVER_PORT: 8081
 
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campusgo
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-auth:5432/campusgo_auth
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_DATASOURCE_USERNAME: campusgo
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
 
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
-
       SPRING_H2_CONSOLE_ENABLED: "false"
 
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES}
 
     depends_on:
-      db:
+      db-auth:
         condition: service_healthy
 
+
+  # ==========================================
+  # Microservicio de OBJETOS
+  # ==========================================
+  objetos:
+    build:
+      context: ./campusgo-objetos
+      dockerfile: Dockerfile
+
+    image: campusgo-objetos:1.0
+    container_name: campusgo-objetos
+
+    ports:
+      - "8083:8083"
+
+    environment:
+      SERVER_PORT: 8083
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-objetos:5432/campusgo_objetos
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_USERNAME: campusgo
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_H2_CONSOLE_ENABLED: "false"
+
+      # La misma clave que auth: así puede validar sus tokens
+      JWT_SECRET: ${JWT_SECRET}
+
+    depends_on:
+      db-objetos:
+        condition: service_healthy
+
+
 volumes:
-  campusgo-postgres-data:
+  campusgo-auth-data:
+  campusgo-objetos-data:

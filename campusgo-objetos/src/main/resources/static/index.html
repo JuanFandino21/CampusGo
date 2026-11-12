@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CampusGo</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: grid;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 56px 24px 72px;
+            font-family: "Lexend", system-ui, sans-serif;
+            color: #18324f;
+            background:
+                radial-gradient(circle at 14% 18%, rgb(20 224 201 / 38%) 0, transparent 360px),
+                radial-gradient(circle at 86% 78%, rgb(99 85 238 / 45%) 0, transparent 460px),
+                radial-gradient(circle at 78% 5%, rgb(37 134 235 / 38%) 0, transparent 320px),
+                linear-gradient(135deg, #071a30 0%, #0d3459 45%, #151e4d 100%);
+            background-size: 180% 180%;
+            animation: fondo-animado 9s ease-in-out infinite alternate;
+        }
+
+        body.sesion-activa {
+            display: block;
+            background:
+                radial-gradient(circle at 10% 12%, rgb(18 214 197 / 25%) 0, transparent 360px),
+                radial-gradient(circle at 90% 82%, rgb(79 70 229 / 23%) 0, transparent 440px),
+                radial-gradient(circle at 70% 8%, rgb(37 99 235 / 20%) 0, transparent 320px),
+                linear-gradient(145deg, #e6f5fa 0%, #dce7f8 48%, #e9e6fa 100%);
+            background-size: 180% 180%;
+        }
+
+
+    
+
+        .contenido {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: entrada-panel 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        body.sesion-activa .contenido {
+            padding: 36px;
+            border: 1px solid rgb(255 255 255 / 90%);
+            border-radius: 24px;
+            background: rgb(255 255 255 / 78%);
+            box-shadow:
+                0 30px 80px rgb(28 54 100 / 20%),
+                0 0 0 1px rgb(76 201 240 / 12%),
+                inset 0 1px 0 rgb(255 255 255 / 95%);
+            backdrop-filter: blur(22px) saturate(140%);
+        }
+
+
+    
+
+        .contenido > h1,
+        .contenido > h2,
+        .contenido > p {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .contenido > h1 {
+            margin-bottom: 8px;
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -1.2px;
+            line-height: 1.15;
+            background: linear-gradient(100deg, #ffffff 10%, #70f1e3 38%, #8ebeff 68%, #ffffff 90%);
+            background-size: 250% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titulo-brillo 4s linear infinite;
+        }
+
+        body.sesion-activa .contenido > h1 {
+            background: none;
+            -webkit-text-fill-color: #16395f;
+            color: #16395f;
+            animation: none;
+        }
+
+        .contenido > h2 {
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #ffffff;
+        }
+
+        body.sesion-activa .contenido > h2 {
+            color: #31577d;
+        }
+
+        .contenido > p {
+            max-width: 510px;
+            margin-right: auto;
+            margin-bottom: 0;
+            margin-left: auto;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #dbe9f5;
+        }
+
+        body.sesion-activa .contenido > p {
+            color: #526a82;
+        }
+
+        h3 {
+            margin: 0 0 18px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.35;
+            color: #ffffff;
+        }
+
+        body.sesion-activa h3 {
+            color: #183b60;
+        }
+
+
+
+
+        hr {
+            height: 1px;
+            margin: 32px 0;
+            border: 0;
+            background: rgb(255 255 255 / 28%);
+        }
+
+        body.sesion-activa hr {
+            background: linear-gradient(90deg, transparent, #61b7d0 20%, #747de0 80%, transparent);
+            opacity: 0.72;
+        }
+
+
+
+        form {
+            display: grid;
+        }
+
+        form br {
+            display: none;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #243f5c;
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 46px;
+            padding: 0 13px;
+            border: 1px solid #aebdcb;
+            border-radius: 9px;
+            outline: 0;
+            background: #f9fbfd;
+            font: inherit;
+            font-size: 15px;
+            color: #142d47;
+            transition:
+                background-color 160ms ease,
+                border-color 160ms ease,
+                box-shadow 160ms ease,
+                transform 160ms ease;
+        }
+
+        #formularioLogin input,
+        #formularioObjeto input,
+        #formularioObjeto select {
+            margin-bottom: 20px;
+        }
+
+        input:hover,
+        select:hover {
+            border-color: #71869b;
+        }
+
+        input:focus-visible,
+        select:focus-visible {
+            border-color: #168fa8;
+            background: #ffffff;
+            box-shadow:
+                0 0 0 3px rgb(20 184 166 / 18%),
+                0 5px 18px rgb(37 99 161 / 12%);
+            transform: translateY(-1px);
+        }
+
+        input::placeholder {
+            color: #74879a;
+            opacity: 1;
+        }
+
+
+  
+
+        button {
+            min-height: 44px;
+            padding: 10px 18px;
+            border: 1px solid #1f4770;
+            border-radius: 9px;
+            background: linear-gradient(110deg, #17699b 0%, #17699b 28%, #168f9f 50%, #314f9c 72%, #17699b 100%);
+            background-size: 260% 100%;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #ffffff;
+            cursor: pointer;
+            transition:
+                border-color 160ms ease,
+                box-shadow 160ms ease,
+                transform 160ms ease;
+            animation: boton-energia 5s ease-in-out infinite;
+        }
+
+        button:hover {
+            border-color: #45c7ce;
+            box-shadow:
+                0 9px 24px rgb(25 102 148 / 28%),
+                0 0 18px rgb(37 211 190 / 20%);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:focus-visible {
+            outline: 3px solid rgb(37 99 161 / 30%);
+            outline-offset: 2px;
+        }
+
+        .buscador button:last-of-type {
+            border-color: #7890a8;
+            background: #f4f8fb;
+            color: #244564;
+            animation: none;
+        }
+
+        .buscador button:last-of-type:hover {
+            border-color: #52708e;
+            background: #e8eef4;
+            color: #183b60;
+            box-shadow: none;
+        }
+
+
+
+        .login {
+            display: grid;
+            padding: 28px;
+            border: 1px solid rgb(139 226 235 / 52%);
+            border-radius: 18px;
+            background: linear-gradient(145deg, rgb(255 255 255 / 96%), rgb(237 248 252 / 90%));
+            box-shadow:
+                0 28px 70px rgb(2 18 38 / 40%),
+                0 0 32px rgb(38 202 207 / 12%),
+                inset 0 1px 0 #ffffff;
+            backdrop-filter: blur(20px);
+            animation: entrada-tarjeta 650ms 100ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .mensaje {
+            min-height: 20px;
+            margin: 10px 0 -4px;
+            font-size: 12px;
+            line-height: 1.65;
+            text-align: center;
+            color: #526a82;
+        }
+
+
+
+
+        .sesion {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 12px 14px;
+            border: 1px solid rgb(74 159 190 / 20%);
+            border-radius: 12px;
+            background: linear-gradient(100deg, rgb(224 247 248 / 72%), rgb(232 235 253 / 62%));
+        }
+
+        .sesion span {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #294765;
+        }
+
+        .sesion button {
+            flex: 0 0 auto;
+        }
+
+
+    
+
+        #formularioObjeto {
+            padding: 24px;
+            border: 1px solid rgb(79 160 190 / 26%);
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgb(255 255 255 / 94%) 0%, rgb(239 248 252 / 88%) 100%);
+            box-shadow:
+                0 14px 34px rgb(25 52 79 / 11%),
+                0 0 24px rgb(30 190 196 / 7%),
+                inset 0 1px 0 #ffffff;
+        }
+
+
+
+        .buscador {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto auto;
+            gap: 10px;
+        }
+
+
+
+        ul {
+            display: grid;
+            gap: 12px;
+            margin-top: 24px;
+            padding: 0;
+            list-style: none;
+        }
+
+        li {
+            overflow-wrap: anywhere;
+            padding: 17px 18px;
+            border: 1px solid #d5dee8;
+            border-left-width: 5px;
+            border-left-color: #9aabba;
+            border-radius: 10px;
+            background: linear-gradient(100deg, rgb(255 255 255 / 96%) 0%, rgb(239 248 252 / 92%) 65%, rgb(238 239 252 / 90%) 100%);
+            box-shadow:
+                0 6px 16px rgb(25 52 79 / 7%),
+                0 1px 3px rgb(25 52 79 / 4%);
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #526a82;
+            transition:
+                border-color 180ms ease,
+                box-shadow 180ms ease,
+                transform 180ms ease;
+            animation: entrada-objeto 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        li:hover {
+            border-color: rgb(81 173 193 / 35%);
+            box-shadow:
+                0 10px 24px rgb(25 52 79 / 11%),
+                0 2px 5px rgb(25 52 79 / 5%);
+            transform: translateX(4px) translateY(-2px);
+        }
+
+        li:nth-child(2) {
+            animation-delay: 80ms;
+        }
+
+        li:nth-child(3) {
+            animation-delay: 160ms;
+        }
+
+        li:nth-child(4) {
+            animation-delay: 240ms;
+        }
+
+        .PERDIDO {
+            border-left-color: #c83f4d;
+            color: #263f58;
+        }
+
+        .ENCONTRADO {
+            border-left-color: #258052;
+            color: #263f58;
+        }
+
+        .ENTREGADO {
+            border-left-color: #2d6a9f;
+            color: #263f58;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .acciones input {
+            width: 80px;
+        }
+
+        .etiqueta-dias {
+            align-self: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #243f5c;
+        }
+
+        .resumen {
+            margin-top: 12px;
+            padding: 14px 16px;
+            border: 1px solid rgb(79 160 190 / 26%);
+            border-radius: 10px;
+            background: rgb(255 255 255 / 80%);
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        li button {
+            flex: 0 0 auto;
+            min-height: 32px;
+            padding: 6px 12px;
+            font-size: 13px;
+            animation: none;
+        }
+
+
+
+        .oculto {
+            display: none;
+        }
+
+
+
+        @keyframes fondo-animado {
+            from {
+                background-position: 0% 0%;
+            }
+
+            to {
+                background-position: 100% 100%;
+            }
+        }
+
+        @keyframes titulo-brillo {
+            to {
+                background-position: 250% center;
+            }
+        }
+
+        @keyframes boton-energia {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes entrada-panel {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes entrada-tarjeta {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(0.985);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes entrada-objeto {
+            from {
+                opacity: 0;
+                transform: translateX(-16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+
+
+        @media (max-width: 520px) {
+
+            body {
+                padding: 32px 18px 48px;
+            }
+
+            body.sesion-activa .contenido {
+                padding: 24px 18px;
+                border-radius: 20px;
+            }
+
+            .contenido > h1 {
+                font-size: 34px;
+            }
+
+            .contenido > h2 {
+                font-size: 16px;
+            }
+
+            hr {
+                margin: 26px 0;
+            }
+
+            h3 {
+                font-size: 20px;
+            }
+
+            .login,
+            #formularioObjeto {
+                padding: 20px;
+            }
+
+            .buscador {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .buscador input {
+                grid-column: 1 / -1;
+            }
+
+            .buscador button {
+                width: 100%;
+            }
+
+            li {
+                padding: 15px 14px;
+                font-size: 13px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="contenido">
+
+    <h1>CampusGo</h1>
+
+    <h2>Objetos perdidos y encontrados</h2>
+
+    <p>
+        Plataforma universitaria para registrar y consultar
+        objetos perdidos y encontrados.
+    </p>
+
+    <hr>
+
+
+
+    <section id="seccionLogin">
+
+        <h3>Iniciar sesión</h3>
+
+        <div class="login">
+
+            <form id="formularioLogin">
+
+                <label for="usuarioLogin">Usuario:</label>
+
+                <input
+                    type="text"
+                    id="usuarioLogin"
+                    required
+                >
+
+                <br><br>
+
+                <label for="passwordLogin">Contraseña:</label>
+
+                <input
+                    type="password"
+                    id="passwordLogin"
+                    required
+                >
+
+                <br><br>
+
+                <button type="submit">
+                    Iniciar sesión
+                </button>
+
+            </form>
+
+            <div id="mensajeLogin" class="mensaje"></div>
+
+        </div>
+
+    </section>
+
+
+  
+
+    <section id="contenidoAplicacion" class="oculto">
+
+        <div class="sesion">
+
+            <span>
+                Sesión iniciada como:
+                <strong id="usuarioActual"></strong>
+            </span>
+
+            <button
+                type="button"
+                onclick="cerrarSesion()"
+            >
+                Cerrar sesión
+            </button>
+
+        </div>
+
+
+        <hr>
+
+
+    
+
+        <h3>Registrar objeto</h3>
+
+        <form id="formularioObjeto">
+
+            <label for="nombre">Nombre:</label>
+
+            <input
+                type="text"
+                id="nombre"
+                required
+            >
+
+            <br><br>
+
+
+            <label for="descripcion">Descripción:</label>
+
+            <input
+                type="text"
+                id="descripcion"
+                required
+            >
+
+            <br><br>
+
+
+            <label for="categoria">Categoría:</label>
+
+            <input
+                type="text"
+                id="categoria"
+                required
+            >
+
+            <br><br>
+
+
+            <label for="ubicacion">Ubicación:</label>
+
+            <input
+                type="text"
+                id="ubicacion"
+                required
+            >
+
+            <br><br>
+
+
+            <label for="estado">Estado:</label>
+
+            <select
+                id="estado"
+                required
+            >
+                <option value="PERDIDO">PERDIDO</option>
+                <option value="ENCONTRADO">ENCONTRADO</option>
+            </select>
+
+            <br><br>
+
+
+            <button type="submit">
+                Registrar objeto
+            </button>
+
+        </form>
+
+
+        <hr>
+
+
+       
+
+        <h3>Objetos registrados</h3>
+
+        <label for="busqueda">
+            Buscar por nombre:
+        </label>
+
+        <div class="buscador">
+
+            <input
+                type="text"
+                id="busqueda"
+                placeholder="Ej: calculadora"
+            >
+
+            <button
+                type="button"
+                onclick="buscarObjetos()"
+            >
+                Buscar
+            </button>
+
+            <button
+                type="button"
+                onclick="listarObjetos()"
+            >
+                Ver todos
+            </button>
+
+        </div>
+
+
+        <div class="acciones">
+
+            <button
+                type="button"
+                onclick="verResumen()"
+            >
+                Ver resumen
+            </button>
+
+            <input
+                type="number"
+                id="dias"
+                value="30"
+                min="0"
+            >
+
+            <span class="etiqueta-dias">días</span>
+
+            <button
+                type="button"
+                onclick="verAntiguos()"
+            >
+                Ver antiguos
+            </button>
+
+        </div>
+
+        <div id="cajaResumen" class="resumen oculto"></div>
+
+        <ul id="listaObjetos"></ul>
+
+    </section>
+
+
+</div>
+
+    <script>
+
+    
+
+        /*
+         * Dirección del microservicio de autenticación.
+         * Los objetos se piden al mismo servicio que sirve
+         * esta página, por eso esas rutas van sin dominio.
+         */
+        const URL_AUTH = "http://localhost:8081";
+
+        const CLAVE_TOKEN = "campusgo_token";
+
+        const CLAVE_USUARIO = "campusgo_usuario";
+
+
+
+        const formularioLogin =
+                document.getElementById("formularioLogin");
+
+        const formularioObjeto =
+                document.getElementById("formularioObjeto");
+
+        const seccionLogin =
+                document.getElementById("seccionLogin");
+
+        const contenidoAplicacion =
+                document.getElementById("contenidoAplicacion");
+
+        const usuarioActual =
+                document.getElementById("usuarioActual");
+
+        const mensajeLogin =
+                document.getElementById("mensajeLogin");
+
+
+
+        function obtenerToken() {
+
+            return sessionStorage.getItem(CLAVE_TOKEN);
+        }
+
+
+
+        function obtenerUsuario() {
+
+            return sessionStorage.getItem(CLAVE_USUARIO);
+        }
+
+
+
+        formularioLogin.addEventListener(
+            "submit",
+            function(evento) {
+
+                evento.preventDefault();
+
+
+                const username =
+                        document.getElementById("usuarioLogin").value;
+
+                const password =
+                        document.getElementById("passwordLogin").value;
+
+
+                mensajeLogin.textContent =
+                        "Validando credenciales...";
+
+
+                fetch(URL_AUTH + "/api/auth/login", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+
+                })
+
+                .then(function(respuesta) {
+
+                    if (respuesta.status === 401) {
+
+                        throw new Error(
+                            "Usuario o contraseña incorrectos."
+                        );
+                    }
+
+
+                    if (!respuesta.ok) {
+
+                        throw new Error(
+                            "No fue posible iniciar sesión."
+                        );
+                    }
+
+
+                    return respuesta.json();
+
+                })
+
+                .then(function(datosLogin) {
+
+                    sessionStorage.setItem(
+                        CLAVE_TOKEN,
+                        datosLogin.token
+                    );
+
+
+                    sessionStorage.setItem(
+                        CLAVE_USUARIO,
+                        datosLogin.username
+                    );
+
+
+                    mensajeLogin.textContent = "";
+
+
+                    formularioLogin.reset();
+
+
+                    mostrarAplicacion();
+
+
+                    listarObjetos();
+
+                })
+
+                .catch(function(error) {
+
+                    mensajeLogin.textContent =
+                            error.message;
+
+                });
+
+            }
+        );
+
+        function mostrarAplicacion() {
+
+            const usuario =
+                    obtenerUsuario();
+
+
+            usuarioActual.textContent =
+                    usuario || "";
+
+
+            seccionLogin.classList.add("oculto");
+
+            contenidoAplicacion.classList.remove("oculto");
+
+            document.body.classList.add("sesion-activa");
+
+        }
+
+
+
+        function cerrarSesion() {
+
+            sessionStorage.removeItem(CLAVE_TOKEN);
+
+            sessionStorage.removeItem(CLAVE_USUARIO);
+
+
+            contenidoAplicacion.classList.add("oculto");
+
+            seccionLogin.classList.remove("oculto");
+
+            document.body.classList.remove("sesion-activa");
+
+
+            usuarioActual.textContent = "";
+
+            document.getElementById(
+                "listaObjetos"
+            ).innerHTML = "";
+
+
+            mensajeLogin.textContent =
+                    "Sesión cerrada correctamente.";
+
+        }
+
+
+    
+
+        formularioObjeto.addEventListener(
+            "submit",
+            function(evento) {
+
+                evento.preventDefault();
+
+
+                const token =
+                        obtenerToken();
+
+
+                if (!token) {
+
+                    alert(
+                        "Debe iniciar sesión antes de registrar un objeto."
+                    );
+
+                    return;
+                }
+
+
+                const objeto = {
+
+                    nombre:
+                        document.getElementById(
+                            "nombre"
+                        ).value,
+
+                    descripcion:
+                        document.getElementById(
+                            "descripcion"
+                        ).value,
+
+                    categoria:
+                        document.getElementById(
+                            "categoria"
+                        ).value,
+
+                    ubicacion:
+                        document.getElementById(
+                            "ubicacion"
+                        ).value,
+
+                    estado:
+                        document.getElementById(
+                            "estado"
+                        ).value
+
+                };
+
+
+                fetch("/api/objetos", {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                                "application/json",
+
+                        "Authorization":
+                                "Bearer " + token
+                    },
+
+                    body:
+                        JSON.stringify(objeto)
+
+                })
+
+                .then(function(respuesta) {
+
+                    if (respuesta.status === 401) {
+
+                        cerrarSesion();
+
+                        throw new Error(
+                            "La sesión expiró. Inicie sesión nuevamente."
+                        );
+                    }
+
+
+                    if (!respuesta.ok) {
+
+                        throw new Error(
+                            "No se pudo registrar el objeto."
+                        );
+                    }
+
+
+                    return respuesta.json();
+
+                })
+
+                .then(function(objetoRegistrado) {
+
+                    alert(
+                        "Objeto registrado correctamente."
+                    );
+
+
+                    formularioObjeto.reset();
+
+
+                    listarObjetos();
+
+                })
+
+                .catch(function(error) {
+
+                    alert(error.message);
+
+                });
+
+            }
+        );
+
+
+
+        function buscarObjetos() {
+
+            const token =
+                    obtenerToken();
+
+
+            if (!token) {
+
+                alert(
+                    "Debe iniciar sesión para consultar objetos."
+                );
+
+                return;
+            }
+
+
+            const texto =
+                    document.getElementById(
+                        "busqueda"
+                    ).value;
+
+
+            const url =
+                    "/api/objetos/buscar?nombre="
+                    + encodeURIComponent(texto);
+
+
+            listarObjetos(url);
+
+        }
+
+
+    
+
+        function listarObjetos(
+                url = "/api/objetos"
+        ) {
+
+            const token =
+                    obtenerToken();
+
+
+            if (!token) {
+
+                return;
+            }
+
+
+            fetch(url, {
+
+                method: "GET",
+
+                headers: {
+
+                    "Authorization":
+                            "Bearer " + token
+
+                }
+
+            })
+
+            .then(function(respuesta) {
+
+                if (respuesta.status === 401) {
+
+                    cerrarSesion();
+
+                    throw new Error(
+                        "La sesión expiró. Inicie sesión nuevamente."
+                    );
+                }
+
+
+                if (!respuesta.ok) {
+
+                    throw new Error(
+                        "No se pudieron cargar los objetos."
+                    );
+                }
+
+
+                return respuesta.json();
+
+            })
+
+            .then(function(objetos) {
+
+                const lista =
+                        document.getElementById(
+                            "listaObjetos"
+                        );
+
+
+                lista.innerHTML = "";
+
+
+                if (objetos.length === 0) {
+
+                    lista.innerHTML =
+                            "<li>No se encontraron objetos.</li>";
+
+                    return;
+                }
+
+
+                objetos.forEach(
+                    function(objeto) {
+
+                        const elemento =
+                                document.createElement(
+                                    "li"
+                                );
+
+
+                        elemento.className =
+                                objeto.estado;
+
+
+                        const texto =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                        texto.textContent =
+
+                                objeto.nombre
+
+                                + " - "
+
+                                + objeto.estado
+
+                                + " - "
+
+                                + objeto.ubicacion;
+
+
+                        elemento.appendChild(texto);
+
+
+                        if (objeto.estado !== "ENTREGADO") {
+
+                            const boton =
+                                    document.createElement(
+                                        "button"
+                                    );
+
+                            boton.type = "button";
+
+                            boton.textContent = "Entregar";
+
+                            boton.onclick = function() {
+                                entregarObjeto(objeto.id);
+                            };
+
+                            elemento.appendChild(boton);
+                        }
+
+
+                        lista.appendChild(
+                            elemento
+                        );
+
+                    }
+                );
+
+            })
+
+            .catch(function(error) {
+
+                alert(error.message);
+
+            });
+
+        }
+
+
+    
+        // ==========================================
+        // RESUMEN DEL INVENTARIO
+        // ==========================================
+
+        function verResumen() {
+
+            const token =
+                    obtenerToken();
+
+
+            if (!token) {
+
+                return;
+            }
+
+
+            fetch("/api/objetos/resumen", {
+
+                method: "GET",
+
+                headers: {
+
+                    "Authorization":
+                            "Bearer " + token
+
+                }
+
+            })
+
+            .then(function(respuesta) {
+
+                if (!respuesta.ok) {
+
+                    throw new Error(
+                        "No se pudo cargar el resumen."
+                    );
+                }
+
+
+                return respuesta.json();
+
+            })
+
+            .then(function(resumen) {
+
+                let texto =
+
+                        "Total de objetos: " + resumen.total
+
+                        + "\nPerdidos: " + resumen.perdidos
+
+                        + "\nEncontrados: " + resumen.encontrados
+
+                        + "\nEntregados: " + resumen.entregados
+
+                        + "\n\nPor categoría:";
+
+
+                for (const categoria in resumen.porCategoria) {
+
+                    texto += "\n" + categoria
+                            + ": "
+                            + resumen.porCategoria[categoria];
+                }
+
+
+                const caja =
+                        document.getElementById(
+                            "cajaResumen"
+                        );
+
+
+                caja.textContent = texto;
+
+                caja.classList.remove("oculto");
+
+            })
+
+            .catch(function(error) {
+
+                alert(error.message);
+
+            });
+
+        }
+
+
+        // ==========================================
+        // OBJETOS ANTIGUOS
+        // ==========================================
+
+        function verAntiguos() {
+
+            const dias =
+                    document.getElementById("dias").value;
+
+
+            listarObjetos(
+                "/api/objetos/antiguos?dias=" + dias
+            );
+
+        }
+
+
+        // ==========================================
+        // ENTREGA DEL OBJETO
+        // ==========================================
+
+        function entregarObjeto(id) {
+
+            const persona =
+                    prompt("¿A quién se le entrega el objeto?");
+
+
+            if (!persona) {
+
+                return;
+            }
+
+
+            const token =
+                    obtenerToken();
+
+
+            fetch(
+                "/api/objetos/" + id + "/entregar?persona="
+                        + encodeURIComponent(persona),
+                {
+
+                    method: "PUT",
+
+                    headers: {
+
+                        "Authorization":
+                                "Bearer " + token
+
+                    }
+
+                }
+            )
+
+            .then(function(respuesta) {
+
+                if (!respuesta.ok) {
+
+                    throw new Error(
+                        "No se pudo registrar la entrega."
+                    );
+                }
+
+
+                return respuesta.json();
+
+            })
+
+            .then(function() {
+
+                listarObjetos();
+
+            })
+
+            .catch(function(error) {
+
+                alert(error.message);
+
+            });
+
+        }
+
+
+        const tokenInicial =
+                obtenerToken();
+
+
+        if (tokenInicial) {
+
+            mostrarAplicacion();
+
+            listarObjetos();
+
+        }
+
+    </script>
+
+</body>
+
+</html>
