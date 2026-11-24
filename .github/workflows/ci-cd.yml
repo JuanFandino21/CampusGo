@@ -78,7 +78,7 @@ jobs:
   deploy:
     name: Deploy to Kubernetes
     needs: publish-images
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/proyecto-04-cicd'
+    if: github.ref == 'refs/heads/proyecto-04-cicd' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: [self-hosted, Windows, X64]
     timeout-minutes: 10
 
