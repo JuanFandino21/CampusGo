@@ -19,7 +19,7 @@ spec:
       containers:
         - name: campusgo-auth
 
-          image: campusgo-auth:1.0
+          image: ghcr.io/juanfandino21/campusgo-auth:1.0
           imagePullPolicy: IfNotPresent
 
           ports:

@@ -1,3 +1,4 @@
+
 name: CampusGo CI-CD
 
 on:
@@ -39,7 +40,7 @@ jobs:
   publish-images:
     name: Build and publish Docker images
     needs: build-and-test
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -73,3 +74,32 @@ jobs:
           tags: |
             ghcr.io/juanfandino21/campusgo-objetos:latest
             ghcr.io/juanfandino21/campusgo-objetos:sha-${{ github.sha }}
+
+  deploy:
+    name: Deploy to Kubernetes
+    needs: publish-images
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/proyecto-04-cicd'
+    runs-on: [self-hosted, Windows, X64]
+    timeout-minutes: 10
+
+    steps:
+      - name: Verify Kubernetes connection
+        run: |
+          kubectl config current-context
+          kubectl get nodes
+
+      - name: Update Auth deployment
+        run: |
+          kubectl set image deployment/campusgo-auth campusgo-auth=ghcr.io/juanfandino21/campusgo-auth:sha-${{ github.sha }} -n campusgo
+
+      - name: Update Objetos deployment
+        run: |
+          kubectl set image deployment/campusgo-objetos campusgo-objetos=ghcr.io/juanfandino21/campusgo-objetos:sha-${{ github.sha }} -n campusgo
+
+      - name: Verify Auth rollout
+        run: |
+          kubectl rollout status deployment/campusgo-auth -n campusgo --timeout=180s
+
+      - name: Verify Objetos rollout
+        run: |
+          kubectl rollout status deployment/campusgo-objetos -n campusgo --timeout=180s
